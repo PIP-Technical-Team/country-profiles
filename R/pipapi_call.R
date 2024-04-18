@@ -80,14 +80,15 @@ for (x in lkups$versions) {
   file_name <-
     fs::path(out_dir, 
              paste0("pip_all_lines_", ppp),
-             ext = "fst")
+             ext = "dta")
   
   # Bind and append
   lapply(dl_pip_pov, `[[`, x) |> 
   rowbind(return =  "data.table")  |> 
-  fst::write_fst(file_name, compress = 95)
+  haven::write_dta(file_name)
 
 }
+
 
 
 
