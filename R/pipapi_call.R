@@ -18,7 +18,6 @@ force <- TRUE
 if (!"lkups" %in% ls() || isTRUE(force)) {
   data_dir <- Sys.getenv("PIPAPI_DATA_ROOT_FOLDER_LOCAL") |>
     fs::path()
-  fs::dir_ls(data_dir, recurse = FALSE)
 }
 
 version  <- "^20240326"
@@ -74,13 +73,14 @@ plan(sequential)
 
 
 # save in dta and fst ---------
-
+out_dir  <-  "//wbgfscifs01/gtsd/06.share/PIP/country_profiles"
 for (x in lkups$versions) {
   # file name 
   ppp <- sub("[^_]+_([^_]+).+", "\\1", x)
-  file_name <- 
-    paste0("data/pip_all_lines_", ppp) |> 
-    fs::path(ext = "fst")
+  file_name <-
+    fs::path(out_dir, 
+             paste0("pip_all_lines_", ppp),
+             ext = "fst")
   
   # Bind and append
   lapply(dl_pip_pov, `[[`, x) |> 
