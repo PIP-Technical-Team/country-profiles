@@ -40,7 +40,7 @@ povlines <- .01 |>
 n_cores <- floor((availableCores() - 1) / 2)
 plan(multisession)
 
-povlines <- povlines[1:10]
+# povlines <- povlines[1:10]
 
 # Run by LInes with Future ---------
 
@@ -59,6 +59,7 @@ with_progress({
                            fill_gaps = FALSE)
                 })
                 names(qq) <- lkups$versions
+                qq
               },
               .options = furrr_options(seed = TRUE)
               )
@@ -72,11 +73,22 @@ if (require(pushoverr)) {
 plan(sequential)
 
 
-# save in dta and fst
+# save in dta and fst ---------
 
-dt_pip_pov <- rowbind(dl_pip_pov, 
-                      return =  "data.table")
+for (x in lkups$versions) {
+  # file name 
+  ppp <- sub("[^_]+_([^_]+).+", "\\1", x)
+  file_name <- 
+    paste0("data/pip_all_lines_", ppp) |> 
+    fs::path(ext = "fst")
+  
+  # Bind and append
+  lapply(dl_pip_pov, `[[`, x) |> 
+  rowbind(return =  "data.table")  |> 
+  fst::write_fst(file_name, compress = 95)
 
-fst::write_fst(dt_pip_pov, "data/pip_pov")
+}
+
+
 
 
